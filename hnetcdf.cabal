@@ -50,7 +50,7 @@ library
         Data.NetCDF.Raw.Utils
     build-tools: c2hs -any
     extra-libraries:
-        netcdf
+        netcdf hdf5_hl hdf5 z
     ghc-options: -Wall
 
 executable example1
