@@ -4,6 +4,8 @@
 
 module Data.NetCDF.Raw.NetCDF4 where
 
+import Data.NetCDF.Raw.Utils
+
 #include <netcdf.h>
 
 --------------------------------------------------------------------------------
@@ -92,8 +94,12 @@ module Data.NetCDF.Raw.NetCDF4 where
 --
 -- int nc_def_var_deflate(int ncid, int varid, int shuffle, int deflate,
 --                        int deflate_level);
+{#fun nc_def_var_deflate { `Int', `Int', `Int', `Int', `Int'} -> `Int' #}
 -- int nc_inq_var_deflate(int ncid, int varid, int *shufflep,
 --                        int *deflatep, int *deflate_levelp);
+
+{#fun nc_inq_var_deflate { `Int', `Int', alloca- `Int' peekIntConv*, alloca-
+`Int' peekIntConv*, alloca- `Int' peekIntConv*} -> `Int' #}
 -- int nc_def_var_fletcher32(int ncid, int varid, int fletcher32);
 -- int nc_inq_var_fletcher32(int ncid, int varid, int *fletcher32p);
 -- int nc_def_var_chunking(int ncid, int varid, int storage,

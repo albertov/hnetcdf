@@ -53,6 +53,7 @@ module Data.NetCDF
        , coardsScale ) where
 
 import Data.NetCDF.Raw
+import Data.NetCDF.Raw.NetCDF4
 import Data.NetCDF.Types
 import Data.NetCDF.Metadata
 import Data.NetCDF.PutGet
@@ -63,7 +64,7 @@ import Data.NetCDF.Utils
 import Control.Exception (bracket)
 import Control.Monad (forM, forM_, void)
 import Data.Bits ((.|.))
-import Data.Maybe (fromMaybe)
+import Data.Maybe (fromMaybe, isJust)
 import qualified Data.Map as M
 import Foreign.C
 import System.IO (IOMode (..))
@@ -216,13 +217,20 @@ read1Var ncid dims varid = do
   let vdims = map (dims !!) $ take nvdims vdimids
   vattrs <- forM [0..nvatts-1] (read1Attr ncid varid)
   let vattmap = foldl (\m (nm, a) -> M.insert nm a m) M.empty vattrs
-  return $ NcVar n (toEnum itype) vdims vattmap
+  (doShuf, doComp, compLvl) <- chk $ nc_inq_var_deflate ncid varid
+  let mComp = if doComp/=0 then Just compLvl else Nothing
+      shuf = doShuf/=0
+  return $ NcVar n (toEnum itype) vdims vattmap shuf mComp
 
 -- | Helper function to write metadata for a single NC variable.
 write1Var :: Int -> M.Map Name Int -> NcVar -> Access Int
-write1Var ncid dimidmap (NcVar n t dims as) = do
+write1Var ncid dimidmap (NcVar n t dims as shuf mComp) = do
   let dimids = map ((dimidmap M.!) . ncDimName) dims
   varid <- chk $ nc_def_var ncid n (fromEnum t) (length dims) dimids
+  chk $ nc_def_var_deflate ncid varid
+    (if shuf then 1 else 0)
+    (if isJust mComp then 1 else 0)
+    (fromMaybe 0 mComp)
   forM_ (M.toList as) $ write1Attr ncid varid
   return varid
 

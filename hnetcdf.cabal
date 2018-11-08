@@ -48,6 +48,7 @@ library
         Data.NetCDF.Raw.PutGet
         Data.NetCDF.Raw.Attributes
         Data.NetCDF.Raw.Utils
+        Data.NetCDF.Raw.NetCDF4
     build-tools: c2hs -any
     extra-libraries:
         netcdf hdf5_hl hdf5 z
@@ -83,7 +84,7 @@ test-suite test-raw-metadata
         test-framework-hunit        >= 0.3     && <0.4,
         test-framework-quickcheck2  >= 0.3     && <0.4,
         HUnit                       >= 1.6     && <1.7,
-        QuickCheck                  >= 2.10    && <2.11
+        QuickCheck                  >= 2.10    && <3
     type: exitcode-stdio-1.0
     main-is: test-raw-metadata.hs
     extra-libraries:

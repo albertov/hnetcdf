@@ -19,9 +19,9 @@ main = do
       nc = emptyNcInfo "tst-put.nc" #
            addNcDim xdim #
            addNcDim ydim #
-           addNcVar (NcVar "x" NcDouble [xdim] xattrs) #
-           addNcVar (NcVar "y" NcDouble [ydim] M.empty) #
-           addNcVar (NcVar "z" NcDouble [xdim, ydim] M.empty)
+           addNcVar (NcVar "x" NcDouble [xdim] xattrs False Nothing) #
+           addNcVar (NcVar "y" NcDouble [ydim] M.empty False Nothing) #
+           addNcVar (NcVar "z" NcDouble [xdim, ydim] M.empty True (Just 9))
   let write nc = do
         let xvar = fromJust $ ncVar nc "x"
             yvar = fromJust $ ncVar nc "y"

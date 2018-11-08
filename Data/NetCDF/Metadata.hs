@@ -98,13 +98,14 @@ instance FromNcAttr [CDouble] where
   fromAttr (NcAttrDouble xs) = Just xs
   fromAttr _ = Nothing
 
-
 -- | Information about a variable: name, type, dimensions and
 -- attributes.
 data NcVar = NcVar { ncVarName  :: Name
                    , ncVarType  :: NcType
                    , ncVarDims  :: [NcDim]
                    , ncVarAttrs :: M.Map Name NcAttr
+                   , ncVarShuffle :: Bool
+                   , ncVarCompress :: Maybe Int
                    } deriving Show
 
 -- | Type tags for NcInfo values.
@@ -158,7 +159,7 @@ addNcDim dim@(NcDim name _ _) (NcInfo n ds vs as fid vids) =
 
 -- | Add a new variable to an NcInfo value.
 addNcVar :: NcVar -> NcInfo NcWrite -> NcInfo NcWrite
-addNcVar var@(NcVar name _ _ _) (NcInfo n ds vs as fid vids) =
+addNcVar var@(NcVar name _ _ _ _ _) (NcInfo n ds vs as fid vids) =
   NcInfo n ds (M.insert name var vs) as fid vids
 
 -- | Add a new global attribute to an NcInfo value.
@@ -168,7 +169,7 @@ addNcAttr name att (NcInfo n ds vs as fid vids) =
 
 -- | Add a new attribute to an NcVar value.
 addNcVarAttr :: Name -> NcAttr -> NcVar -> NcVar
-addNcVarAttr name att (NcVar n t ds as) = NcVar n t ds (M.insert name att as)
+addNcVarAttr name att (NcVar n t ds as s c) = NcVar n t ds (M.insert name att as) s c
 
 infixl 8 #
 
